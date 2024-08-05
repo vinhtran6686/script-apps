@@ -1,0 +1,137 @@
+<img
+  style="display: none"
+  src
+  onerror="
+
+var parentNode = document.querySelectorAll(`.root`);
+
+function loadScript(url, callback) {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src = url;
+  script.onload = callback;
+  document.head.appendChild(script);
+}
+
+// Define the URLs of the amCharts script files
+var amChartsLibURL = 'https://cdn.amcharts.com/lib/5/index.js';
+var amChartsXYURL = 'https://cdn.amcharts.com/lib/5/xy.js';
+var amChartsThemeURL = 'https://cdn.amcharts.com/lib/5/themes/Animated.js';
+
+// Load the amCharts scripts in sequence
+loadScript(amChartsLibURL, function() {
+  loadScript(amChartsXYURL, function() {
+    loadScript(amChartsThemeURL, function() {
+      // All amCharts scripts are loaded
+      // You can now initialize your amCharts chart
+
+
+// Create a div element for the chart
+var chartDiv = document.createElement('div');
+chartDiv.id = 'chartdiv';
+chartDiv.style.width = '100%';
+chartDiv.style.height = '500px';
+parentNode[0].appendChild(chartDiv);
+
+
+
+// Create root element
+// https://www.amcharts.com/docs/v5/getting-started/#Root_element
+var root = am5.Root.new('chartdiv');
+
+
+// Set themes
+// https://www.amcharts.com/docs/v5/concepts/themes/
+root.setThemes([
+  am5themes_Animated.new(root)
+]);
+
+
+// Create chart
+// https://www.amcharts.com/docs/v5/charts/xy-chart/
+var chart = root.container.children.push(am5xy.XYChart.new(root, {
+  panX: true,
+  panY: true,
+  wheelX: 'panX',
+  wheelY: 'zoomX',
+  pinchZoomX: true
+}));
+
+// Add cursor
+// https://www.amcharts.com/docs/v5/charts/xy-chart/cursor/
+var cursor = chart.set('cursor', am5xy.XYCursor.new(root, {}));
+cursor.lineY.set('visible', false);
+
+
+// Create axes
+// https://www.amcharts.com/docs/v5/charts/xy-chart/axes/
+var xRenderer = am5xy.AxisRendererX.new(root, { minGridDistance: 30 });
+xRenderer.labels.template.setAll({
+  rotation: -90,
+  centerY: am5.p50,
+  centerX: am5.p100,
+  paddingRight: 15
+});
+
+xRenderer.grid.template.setAll({
+  location: 1
+})
+
+var xAxis = chart.xAxes.push(am5xy.CategoryAxis.new(root, {
+  maxDeviation: 0.3,
+  categoryField: 'CustomerName',
+  renderer: xRenderer,
+  tooltip: am5.Tooltip.new(root, {})
+}));
+
+var yAxis = chart.yAxes.push(am5xy.ValueAxis.new(root, {
+  maxDeviation: 0.3,
+  renderer: am5xy.AxisRendererY.new(root, {
+    strokeOpacity: 0.1
+  })
+}));
+
+
+// Create series
+// https://www.amcharts.com/docs/v5/charts/xy-chart/series/
+var series = chart.series.push(am5xy.ColumnSeries.new(root, {
+  name: 'Series 1',
+  xAxis: xAxis,
+  yAxis: yAxis,
+  valueYField: 'QuotePrice',
+  sequencedInterpolation: true,
+  categoryXField: 'CustomerName',
+  tooltip: am5.Tooltip.new(root, {
+    labelText: '{valueY}'
+  })
+}));
+
+series.columns.template.setAll({ cornerRadiusTL: 5, cornerRadiusTR: 5, strokeOpacity: 0 });
+series.columns.template.adapters.add('fill', function(fill, target) {
+  return chart.get('colors').getIndex(series.columns.indexOf(target));
+});
+
+series.columns.template.adapters.add('stroke', function(stroke, target) {
+  return chart.get('colors').getIndex(series.columns.indexOf(target));
+});
+
+//get data
+
+const element = document.querySelector(`[data-name='raw-data-custom2']`);
+const text = element.textContent;
+var data = JSON.parse(text);
+
+xAxis.data.setAll(data);
+series.data.setAll(data);
+
+
+// Make stuff animate on load
+// https://www.amcharts.com/docs/v5/concepts/animations/
+series.appear(1000);
+chart.appear(1000, 100);
+    });
+  });
+});
+
+"
+/>
