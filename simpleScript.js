@@ -1,4 +1,4 @@
-console.log("Simple JS script has been loaded and run2!");
+console.log("Simple JS script has been loaded and run212312312!");
 alert("Simple JS script has been loaded and run!");
 
 // Tạo một phần tử div mới
